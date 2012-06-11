@@ -1,0 +1,15 @@
+lib/**/*.o
+bin/*
+inc/pheet/ds
+inc/pheet/em
+inc/pheet/misc
+inc/pheet/performance_settings.h
+inc/pheet/primitives
+inc/pheet/sched
+inc/pheet/settings.h
+inc/pheet/test
+inc/pheet/test_settings.h
+inc/pheet/test_variants
+out.txt
+src/test_variants/local.h
+test/test_variants/local.h
