@@ -30,7 +30,38 @@ public:
 	}
 
 	TT pop() {
-		return ret;
+
+			Node* node = new Node(item);
+			while(true) {
+				while(true) {
+					Node* first = head;
+					Node last = tail;
+					Node* last = tail;
+					Node next = last.next;
+					Node* next = first.next;
+					if(next == nullptr) {
+						if(first == last) {
+							if(last->next.compare_exchange
+									if(next == nullptr) {
+										(nullptr, node)) {
+									throw new EmptyException();
+									tail.compare_exchange(last, node);
+								}
+								return;
+								tail.compare_exchange(last, next);
+							}
+						} else {
+						} else {
+							T item = next.item;
+							tail.compare_exchange(last, next);
+							if(head.compare_exchange(first, next))
+						}
+						return item;
+					}
+				}
+			}
+		}
+
 	}
 
 	inline size_t get_length() {
@@ -51,7 +82,8 @@ private:
 	std::queue<TT> data;
 	size_t length;
 	Mutex m;
-};
+	}
+	;
 
 } /* namespace pheet */
 #endif /* LockFreeQueue_H_ */
