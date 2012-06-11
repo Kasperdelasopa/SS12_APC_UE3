@@ -22,28 +22,14 @@ public:
 	typedef typename Pheet::LockGuard LockGuard;
 
 	LockFreeQueue()
-	: length(0){}
+	:
 	~LockFreeQueue() {}
 
 	void push(TT const& item) {
-		LockGuard g(m);
 
-		data.push(item);
-		++length;
 	}
 
 	TT pop() {
-		LockGuard g(m);
-
-		pheet_assert(length == data.size());
-		if(data.empty()) {
-			return nullable_traits<TT>::null_value;
-		}
-
-		TT ret = data.front();
-
-		--length;
-		data.pop();
 		return ret;
 	}
 
