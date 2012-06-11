@@ -11,8 +11,14 @@
 
 //#define PHEET_DEBUG_MODE
 // #define PHEET_ALL_PERFORMANCE_COUNTERS
-#define ACTIVE_TEST 	"test_variants/fast.h"
+//#define ACTIVE_TEST 	"test_variants/fast.h"
+// #define ACTIVE_TEST "test_variants/amp/stealing_deque.h"
 
+ #define ACTIVE_TEST "test_variants/amp/queue_stack.h"
+
+//  #define ACTIVE_TEST "test_variants/amp/skiplist.h"
+
+  //#define ACTIVE_TEST "test_variants/amp/locks.h"
 
 bool const graph_bipartitioning_test_count_irrelevant_tasks = false;
 bool const graph_bipartitioning_test_count_upper_bound_changes = false;
