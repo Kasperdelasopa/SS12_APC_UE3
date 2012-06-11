@@ -1,13 +1,13 @@
 /*
- * GlobalLockQueue.h
+ * LockFreeQueue.h
  *
  *  Created on: May 29, 2012
  *      Author: Martin Wimmer
  *	   License: Boost Software License 1.0
  */
 
-#ifndef GLOBALLOCKQUEUE_H_
-#define GLOBALLOCKQUEUE_H_
+#ifndef LOCKFREEQUEUE_H_
+#define LOCKFREEQUEUE_H_
 
 #include <queue>
 #include <iostream>
@@ -16,14 +16,14 @@
 namespace pheet {
 
 template <class Pheet, typename TT>
-class GlobalLockQueue {
+class LockFreeQueue {
 public:
 	typedef typename Pheet::Mutex Mutex;
 	typedef typename Pheet::LockGuard LockGuard;
 
-	GlobalLockQueue()
+	LockFreeQueue()
 	: length(0){}
-	~GlobalLockQueue() {}
+	~LockFreeQueue() {}
 
 	void push(TT const& item) {
 		LockGuard g(m);
@@ -56,7 +56,7 @@ public:
 	}
 
 	static void print_name() {
-		std::cout << "GlobalLockQueue<";
+		std::cout << "LockFreeQueue<";
 		Mutex::print_name();
 		std::cout << ">";
 	}
@@ -68,4 +68,4 @@ private:
 };
 
 } /* namespace pheet */
-#endif /* GLOBALLOCKQUEUE_H_ */
+#endif /* LockFreeQueue_H_ */
