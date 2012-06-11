@@ -20,7 +20,7 @@ namespace pheet {
 template <class Pheet, typename TT>
 class LockFreeStack {
   std::atomic<int*> top = new Node();
-
+  //Test
 
 
 	protected:  bool tryPush(Node node){
