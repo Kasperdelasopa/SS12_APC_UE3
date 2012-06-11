@@ -6,8 +6,8 @@
  *	   License: Boost Software License 1.0
  */
 
-#ifndef GLOBALLOCKSTACK_H_
-#define GLOBALLOCKSTACK_H_
+#ifndef LOCKFREESTACK_H_
+#define LOCKFREESTACK_H_
 
 #include <vector>
 #include <iostream>
@@ -16,12 +16,12 @@
 namespace pheet {
 
 template <class Pheet, typename TT>
-class GlobalLockStack {
+class LockFreeStack {
 public:
 	typedef typename Pheet::Mutex Mutex;
 	typedef typename Pheet::LockGuard LockGuard;
 
-	GlobalLockStack()
+	LockFreeStack()
 	: length(0){}
 	~GlobalLockStack() {}
 
