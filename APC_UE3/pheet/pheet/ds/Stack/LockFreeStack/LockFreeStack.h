@@ -12,60 +12,78 @@
 #include <vector>
 #include <iostream>
 #include "../../../misc/type_traits.h"
+#include "../../../misc/atomics.h"
+#include <atomic>
 
 namespace pheet {
 
 template <class Pheet, typename TT>
 class LockFreeStack {
-public:
-	typedef typename Pheet::Mutex Mutex;
-	typedef typename Pheet::LockGuard LockGuard;
+  std::atomic<int*> top = new Node();
 
-	LockFreeStack()
-	: length(0){}
-	~GlobalLockStack() {}
 
-	void push(TT const& item) {
-		LockGuard g(m);
 
-		data.push_back(item);
-		++length;
+	protected:  bool tryPush(Node node){
+	  Node oldTop = top.get();
+	  node.next = oldTop;
+	  return(NODE_CAS(node, oldTop, node));
 	}
 
-	TT pop() {
-		LockGuard g(m);
+	public: void push(TT value) {
+	  Node node = new Node(value);
 
-		pheet_assert(length == data.size());
-		if(data.empty()) {
-			return nullable_traits<TT>::null_value;
+	  {// Scope of backoff
+	    Pheet::Backoff bo;
+		  while (true) {
+			if (tryPush(node)) {
+			  return;
+			} else {
+			  bo.backoff();
+			}
+		  }
+	  }
+	}
+
+	protected: Node tryPop() {
+	  Node oldTop = top.get();
+	  if (oldTop == NULL) {
+		  return nullable_traits<TT>::null_value;
+	  }
+	  Node newTop = oldTop.next;
+	  if (Node_CAS(top, oldTop, newTop)) {
+		return oldTop;
+	  } else {
+		return NULL;
+	  }
+	}
+
+	public: TT pop() {
+		{// Scope of backoff
+			Pheet::Backoff bo;
+			  while (true) {
+				Node returnNode = tryPop();
+				if (returnNode != NULL) {
+				  return returnNode.value;
+				} else {
+				  bo.backoff();
+				}
+			  }
 		}
-
-		TT ret = data.back();
-
-		--length;
-		data.pop_back();
-		return ret;
 	}
 
-	inline size_t get_length() {
-		return length;
-	}
-
-	inline size_t size() {
-		return get_length();
-	}
-
-	static void print_name() {
-		std::cout << "GlobalLockStack<";
-		Mutex::print_name();
-		std::cout << ">";
-	}
-
-private:
-	std::vector<TT> data;
-	size_t length;
-	Mutex m;
 };
+template <class Pheet, typename TT>
+class Node {
+	public:
+		TT value;
+		Node next;
+
+	public: Node(TT value) {
+		this->value = value;
+		next = NULL;
+	}
+};
+
 
 } /* namespace pheet */
 #endif /* GLOBALLOCKSTACK_H_ */
