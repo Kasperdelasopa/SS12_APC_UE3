@@ -69,7 +69,7 @@ void SortingTests::run_test() {
 						DagQuicksort>();
 	this->run_sorter<	Pheet::WithScheduler<BasicScheduler>,
 						DagQuicksort>();
-	this->run_sorter<	Pheet::WithScheduler<BasicScheduler>::WithTaskStorage<LockFreeStack>,
+	this->run_sorter<	Pheet::WithScheduler<CentralizedScheduler>::WithTaskStorage<LockFreeStack>,
 						DagQuicksort>();
 #elif AMP_SKIPLIST_TEST
 	this->run_sorter<	Pheet::WithScheduler<CentralizedPriorityScheduler>,
