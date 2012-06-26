@@ -13,33 +13,51 @@
 #include <iostream>
 #include "../../../misc/type_traits.h"
 #include "../../../misc/atomics.h"
-#include <atomic>
+#include <pheet/misc/atomics.h>
 
 namespace pheet {
+
+template<typename TT>
+	class Node {
+	typedef Node<TT>  LFSNode;
+		public:
+			TT value;
+			LFSNode *next;
+
+		public: Node(TT value) {
+			this->value = value;
+			next = NULL;
+		}
+	};
 
 template <class Pheet, typename TT>
 class LockFreeStack {
 public:
 	typedef typename Pheet::Mutex Mutex;
 	typedef typename Pheet::LockGuard LockGuard;
+	typedef Node<TT>  LFSNode;
+	LFSNode *top;
+
 
 	LockFreeStack()
-	: length(0){}
+	: top(new LFSNode(nullable_traits<TT>::null_value)), length(0){}
 	~LockFreeStack() {}
 
-	atomic<TT*> top = Node(nullable_traits<TT>::null_value);
 
 
-	protected:  bool tryPush(TT node){
-	  TT oldTop = std::atomic_load(top);
 
-	  node.next = oldTop;
-	  return(std::atomic_compare_exchange_weak(node, oldTop, node));
+protected:
+	bool tryPush(LFSNode *node){
+		LFSNode * oldTop = top;
+
+		node->next = oldTop;
+
+		return(PTR_CAS(&top, oldTop, node));
 	}
 
-	public: void push(TT value) {
-	  TT node = new Node(value);
-
+public:
+	void push(TT value) {
+		LFSNode *node = new LFSNode(value);
 	  {// Scope of backoff
 		  while (true) {
 			if (tryPush(node)) {
@@ -52,24 +70,26 @@ public:
 	  }
 	}
 
-	protected: TT tryPop() {
-	  TT oldTop = std::atomic_load(top);
-	  if (oldTop == NULL) {
-		  return nullable_traits<TT>::null_value;
-	  }
-	  TT newTop = oldTop.next;
-	  if (std::atomic_compare_exchange_weak(top, oldTop, newTop)) {
-		return oldTop;
-	  } else {
-		return NULL;
-	  }
+protected:
+		LFSNode* tryPop() {
+			LFSNode *oldTop = top;
+		  if (oldTop == NULL) {
+			  return NULL;
+		  }
+		  LFSNode *newTop = oldTop->next;
+		  if (PTR_CAS(&top, oldTop, newTop)) {
+			return oldTop;
+		  } else {
+			return NULL;
+		  }
 	}
 
-	public: TT pop() {
+	public:
+	  TT pop() {
 		  while (true) {
-			TT returnNode = tryPop();
+			  LFSNode * returnNode = tryPop();
 			if (returnNode != NULL) {
-			  return returnNode.value;
+			  return returnNode->value;
 			} else {
 				{
 				  typename Pheet::Backoff bo;
@@ -79,16 +99,6 @@ public:
 		  }
 	}
 
-	class Node {
-		public:
-			TT value;
-			Node next;
-
-		public: Node(TT value) {
-			this->value = value;
-			next = NULL;
-		}
-	};
 
 	inline size_t get_length() {
 		return length;
@@ -105,15 +115,8 @@ public:
 	}
 
 	private:
-		std::vector<TT> data;
 		size_t length;
-		Mutex m;
-
 };
-
-
-
-
 
 } /* namespace pheet */
 #endif /* LOCKFREESTACK_H_ */
