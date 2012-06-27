@@ -43,9 +43,6 @@ public:
 	: top(new LFSNode(nullable_traits<TT>::null_value)), length(0){}
 	~LockFreeStack() {}
 
-
-
-
 protected:
 	bool tryPush(LFSNode *node){
 		LFSNode * oldTop = top;

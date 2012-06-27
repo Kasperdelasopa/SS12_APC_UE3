@@ -25,11 +25,11 @@ public:
 	:
 	~LockFreeQueue() {}
 
-	void push(TT const& item) {
+	void push(Node const& item) {
 
 	}
 
-	TT pop() {
+	Node pop() {
 
 			Node* node = new Node(item);
 			while(true) {
