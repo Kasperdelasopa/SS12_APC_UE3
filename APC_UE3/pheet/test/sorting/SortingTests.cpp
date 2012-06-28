@@ -28,7 +28,7 @@
 
 #include <pheet/primitives/Mutex/TASLock/TASLock.h>
 #include <pheet/primitives/Mutex/TTASLock/TTASLock.h>
-
+#include <pheet/ds/Queue/LockFreeQueue/LockFreeQueue.h>
 #include <pheet/pheet.h>
 #include <pheet/sched/Basic/BasicScheduler.h>
 #include <pheet/sched/Finisher/FinisherScheduler.h>
@@ -63,7 +63,8 @@ void SortingTests::run_test() {
 						DagQuicksort>();
 
 #elif AMP_QUEUE_STACK_TEST
-
+	this->run_sorter<	Pheet::WithScheduler<CentralizedScheduler>::WithTaskStorage<LockFreeQueue>,
+						DagQuicksort>();
 	this->run_sorter<	Pheet::WithScheduler<CentralizedScheduler>,
 						DagQuicksort>();
 	this->run_sorter<	Pheet::WithScheduler<CentralizedScheduler>::WithTaskStorage<GlobalLockQueue>,
